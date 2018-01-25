@@ -1,6 +1,6 @@
-FROM ubuntu:12.04
+FROM i386/ubuntu:12.04
 
-MAINTAINER Luis Elizondo "lelizondo@gmail.com"
+MAINTAINER Mikhail Snetkov "ufoproger@gmail.com"
 ENV DEBIAN_FRONTEND noninteractive
 
 # Ensure UTF-8
@@ -22,6 +22,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN pecl install uploadprogress
 
+ENV COMPOSER_ALLOW_SUPERUSER	1
+ENV COMPOSER_NO_INTERACTION		1
+
 RUN /usr/bin/curl -sS https://getcomposer.org/installer | /usr/bin/php
 RUN /bin/mv composer.phar /usr/local/bin/composer
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -38,8 +41,8 @@ RUN a2enmod rewrite
 # PHP
 RUN sed -i 's/memory_limit = .*/memory_limit = 196M/' /etc/php5/apache2/php.ini
 RUN sed -i 's/cgi.fix_pathinfo = .*/cgi.fix_pathinfo = 0/' /etc/php5/apache2/php.ini
-RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 500M/' /etc/php5/apache2/php.ini
-RUN sed -i 's/post_max_size = .*/post_max_size = 500M/' /etc/php5/apache2/php.ini
+RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 512M/' /etc/php5/apache2/php.ini
+RUN sed -i 's/post_max_size = .*/post_max_size = 512M/' /etc/php5/apache2/php.ini
 
 RUN echo "extension=uploadprogress.so" > /etc/php5/conf.d/uploadprogress.ini
 
@@ -56,7 +59,7 @@ RUN chown -R www-data:www-data /var/www
 
 EXPOSE 80
 WORKDIR /var/www
-VOLUME ["/var/www/sites/default/files"]
+VOLUME ["/var/www"]
 CMD ["/usr/bin/supervisord", "-n"]
 
 # Add files
